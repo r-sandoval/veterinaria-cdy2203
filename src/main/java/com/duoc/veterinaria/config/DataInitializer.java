@@ -3,6 +3,7 @@ package com.duoc.veterinaria.config;
 import com.duoc.veterinaria.model.*;
 import com.duoc.veterinaria.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -34,29 +35,32 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${app.admin.password}")
+    private String adminPassword;
+
+    @Value("${app.user.password}")
+    private String userPassword;
+
     @Override
     public void run(String... args) throws Exception {
-        // Solo cargar datos si la base de datos está vacía
         if (userRepository.count() > 0) {
             return;
         }
 
-        // Crear usuarios
         User admin = new User();
         admin.setUsername("admin");
-        admin.setPassword(passwordEncoder.encode("admin123"));
+        admin.setPassword(passwordEncoder.encode(adminPassword));
         admin.setRole("ADMIN");
         admin.setEnabled(true);
         userRepository.save(admin);
 
         User user = new User();
         user.setUsername("user");
-        user.setPassword(passwordEncoder.encode("user123"));
+        user.setPassword(passwordEncoder.encode(userPassword));
         user.setRole("USER");
         user.setEnabled(true);
         userRepository.save(user);
 
-        // Crear dueños
         Owner owner1 = new Owner();
         owner1.setName("Juan Pérez");
         owner1.setPhone("+56912345678");
@@ -71,7 +75,6 @@ public class DataInitializer implements CommandLineRunner {
         owner2.setAddress("Av. Las Condes 456, Santiago");
         ownerRepository.save(owner2);
 
-        // Crear mascotas
         Patient patient1 = new Patient();
         patient1.setName("Firulais");
         patient1.setSpecies("Perro");
@@ -88,7 +91,6 @@ public class DataInitializer implements CommandLineRunner {
         patient2.setOwner(owner2);
         patientRepository.save(patient2);
 
-        // Crear citas
         Appointment appointment1 = new Appointment();
         appointment1.setDateTime(LocalDateTime.now().plusDays(1));
         appointment1.setReason("Vacunación anual");
@@ -103,7 +105,6 @@ public class DataInitializer implements CommandLineRunner {
         appointment2.setPatient(patient2);
         appointmentRepository.save(appointment2);
 
-        // Crear registros médicos
         MedicalRecord record1 = new MedicalRecord();
         record1.setDiagnosis("Mascota sana");
         record1.setTreatment("Vacuna aplicada");
@@ -111,7 +112,6 @@ public class DataInitializer implements CommandLineRunner {
         record1.setAppointment(appointment1);
         medicalRecordRepository.save(record1);
 
-        // Crear facturas
         Invoice invoice1 = new Invoice();
         invoice1.setAmount(50000.0);
         invoice1.setDate(LocalDate.now());
@@ -119,7 +119,7 @@ public class DataInitializer implements CommandLineRunner {
         invoice1.setAppointment(appointment1);
         invoiceRepository.save(invoice1);
 
-        System.out.println(" Datos iniciales cargados correctamente");
-        System.out.println("   Usuarios: admin/admin123 y user/user123");
+        System.out.println("Datos iniciales cargados correctamente");
+        System.out.println("Usuarios: admin/*** y user/***");
     }
 }

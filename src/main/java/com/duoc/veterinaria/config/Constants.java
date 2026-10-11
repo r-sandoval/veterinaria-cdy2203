@@ -2,10 +2,13 @@ package com.duoc.veterinaria.config;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
+@Component
 public class Constants {
 
     // Spring Security
@@ -15,8 +18,15 @@ public class Constants {
 
     // JWT
     public static final String ISSUER_INFO = "https://www.duocuc.cl/";
-    public static final String SUPER_SECRET_KEY = "ZnJhc2VzbGFyZ2FzcGFyYWNvbG9jYXIjb21vY2xhdmlVbnVucHJvamVjdG9kZWwtZXBsb3BhcmFqd3Rjb25zcHJpbmdzZWN1cml0eQ==bWlwcnVlYmFkZWVqbXBsb3BhcmFjYXNIjQ=";
     public static final long TOKEN_EXPIRATION_TIME = 864_000_000; // 10 días
+
+    // Clave secreta inyectada desde application.properties
+    public static String SUPER_SECRET_KEY;
+
+    @Value("${app.jwt.secret}")
+    public void setSuperSecretKey(String secret) {
+        Constants.SUPER_SECRET_KEY = secret;
+    }
 
     public static Key getSigningKeyB64(String secret) {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
